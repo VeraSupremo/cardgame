@@ -5,16 +5,17 @@
 #include<windows.h>
 #include<math.h>
 //se pueden usar variables globales usadas con define para no perderse
-#define maxd_cartas = 15
-#define cartas_juego = 3
-#define UenJuego = 5
-struct jugador{
+#define maxd_cartas  15
+#define cartas_juego  3
+#define UenJuego  5
+#define MaximoLinea  459
+typedef struct jugador{
 	char nombre[200];
 	int vida[4]; //un array para la vida? vida[0] = 1, vida[1] = 1 y asi? -n
 	
 	
-};
-struct cartas{
+}JUGADOR;
+typedef struct cartas{
 	char nombre[200];
 	char clase[200];
 	int ataque;
@@ -22,9 +23,9 @@ struct cartas{
 	int defensa;
 	struct cartas*siguiente;
 }CARTA;
-struct historial{
+typedef struct historial{
 	//el historial debe ser una cola ya que se muestran por orden
-};
+}HISTORIAL;
 
 
 void reglas(){
@@ -43,38 +44,97 @@ void reglas(){
     printf("Atacar a un oponente con una de las cartas que se encuentra en el campo de batalla.\n");
 	printf("________________________________________________________________________________________\n");
 }
-void nuevacarta(){
-	//la funcion crear debe validar en base a los datos cargados en el analisis
-	//en esta parte se relaciona con lo comentado en analisis, ya que a la hora de crear la carta
-	//el usuario debe de respetar los limites max y min  x ej  si la vida tiene 90 y el limite es 70 la vida baja a 70
-	
-	
-}
+
 void juego(){
 	int turno;
 	
 }
-void analisis(struct cartas*personajes){
+// aca personajes es la lista de cartas
+//lee el archivo de texto y añade carta a la lista
+void analisis( CARTA **MAZO){
 //	struct cartas personajes [75];
+	char limite[MaximoLinea];
+	int contador;
 	FILE*fichero;
 	fichero= fopen("cardgametest.txt","r");
 	//verificador si el archivo presenta eerror o no 
 	if(fichero == NULL){
 		perror("fallo abrir el archivo");
 		
-		return 1;
+		return ;
 	}
-	while(feof(fichero)==0){
 	
-		fscanf(fichero ,%s,%s,%d,%d,%d, personajes->nombre,personajes->clase,personajes->ataque, personajes-> vida, personajes-> defensa)	
+	while(fgets(limite, MaximoLinea, fichero)){
+//                                                        malloc reserva el espacio en la memoria
+        CARTA *newStruct= (CARTA *)malloc(sizeof(CARTA));
+
+        char *nombre = strtok(limite, ",");
+        strcpy(newStruct->nombre, nombre);                //para copiar texto
+		char *clase = strtok(limite, ",");
+        strcpy(newStruct->clase, clase);
+      
+        newStruct->ataque = atoi(strtok(NULL, ","));      //atoi es  para valores enteros
+        newStruct->vida = atoi(strtok(NULL, ","));
+        newStruct->defensa = atoi(strtok(NULL, ","));
+
+        newStruct->siguiente = NULL;
+
+		printf("%s \n%s \n %d \n%d \n %d",newStruct->nombre,newStruct->clase,newStruct->ataque, newStruct-> vida, newStruct-> defensa);
+        //                  Se añade el Struct creado a la lista existente.
+       //  agregarcartas(lista, newStruct); // función para agregar elementos a la lista
+    }
+    fclose(fichero);
+
+	
+/*	while(!feof(fichero)){
+		fgets(temp,500,fichero);
+		contador++;
+		//par que vuelva al inicio la posicion y seguir trwabajando usammos rewind
+	}
+	rewind(fichero);
+	for(int i= 0; !feof(fichero); i++){
+		fscanf(fichero %s,%s,%d,%d,%d, personajes->nombre,personajes->clase,personajes->ataque, personajes-> vida, personajes-> defensa):	
 		
 	}
-//
+	
+	
+	while(feof(fichero)==0){
+	
+		fscanf(fichero ,%s,%s,%d,%d,%d, personajes->nombre,personajes->clase,personajes->ataque, personajes-> vida, personajes-> defensa):	
+		
+	}
+*/
 	
 
 	//debe haber un valor maximo para cada variable de vida, ataque y defensa 
 	// de esta forma cuando se esten cargando se pueden ir guardando en una variable
 	
+	
+}
+void agregarcartas( CARTA **MAZO/*esta parte es para cuando deba crear la carta CARTA *NUEVACARTA*/) {
+    if (*MAZO == NULL) {
+       // *MAZO = NUEVACARTA;
+    } else {
+        CARTA *current = *MAZO;
+        while (current->siguiente != NULL) {
+            current = current->siguiente;
+        }
+       // current->siguiente = NUEVACARTA;
+    }
+
+}
+CARTA *nuevacarta(char *nombre, char *clase, int ataque, int vida, int defensa){
+	//la funcion crear debe validar en base a los datos cargados en el analisis
+	//en esta parte se relaciona con lo comentado en analisis, ya que a la hora de crear la carta
+	//el usuario debe de respetar los limites max y min  x ej  si la vida tiene 90 y el limite es 70 la vida baja a 70
+	CARTA *NUEVACARTA = (CARTA *)malloc(sizeof(CARTA));
+    strcpy(NUEVACARTA->nombre, nombre);
+    strcpy(NUEVACARTA->clase, clase);
+    NUEVACARTA->ataque = ataque;
+    NUEVACARTA->vida = vida;
+    NUEVACARTA->defensa = defensa;
+    NUEVACARTA->siguiente = NULL;
+    return NUEVACARTA;
 	
 }
 void revolver(){
@@ -88,7 +148,9 @@ int main(){
 	int menu;
 	
     //orden de las cartas                   Name,Type,vida,Ataque,DeFensa
-	
+    CARTA *MAZO= NULL; //mazo es el head
+    CARTA *NUEVACARTA;
+	analisis(&MAZO);
 	
 	
 	
@@ -106,17 +168,17 @@ int main(){
 	
 	//menu de inicio para empezar
 	sleep(1);
-	printf("CARGANDO JUEGO");
+	printf("\nCARGANDO JUEGO");
 	sleep(1);
 	printf("..");
 	sleep(1);
 	printf("..");
 	sleep(1);
 	printf("..");
-	sleep(1);
+	sleep(2);
 	printf("............\nJUEGO CARGADO EXITOSAMENTE\n\n\n");
 	printf("BIENVENIDO A THE CLASH OF THE GUARDIANS\n");
-	sleep(1);
+	sleep(2);
 	printf("__________________________________________\n");
 	printf("......opcion 1:   CREAR CARTA PROPIA.....\n");
 	printf("......opcion 2:     NUEVA PARTIDA   .....\n");
