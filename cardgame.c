@@ -18,6 +18,7 @@ typedef struct jugador{
 typedef struct cartas{
 	char nombre[200];
 	char clase[200];
+//	int clase;
 	int ataque;
 	int vida;
 	int defensa;
@@ -51,7 +52,7 @@ void juego(){
 }
 // aca personajes es la lista de cartas
 //lee el archivo de texto y añade carta a la lista
-void analisis( CARTA **MAZO){
+void analisis( CARTA **MAZO, int vidmin,int vidmax,int atamin,int atamax,int defmin,int defmax){
 //	struct cartas personajes [75];
 	char limite[MaximoLinea];
 	int contador;
@@ -70,7 +71,10 @@ void analisis( CARTA **MAZO){
 
         char *nombre = strtok(limite, ",");
         strcpy(newStruct->nombre, nombre);                //para copiar texto
-		char *clase = strtok(limite, ",");
+        
+        
+        //newStruct->clase = atoi(strtok(NULL, ","));
+		char *clase = strtok(NULL, ",");
         strcpy(newStruct->clase, clase);
       
         newStruct->ataque = atoi(strtok(NULL, ","));      //atoi es  para valores enteros
@@ -79,9 +83,28 @@ void analisis( CARTA **MAZO){
 
         newStruct->siguiente = NULL;
 
-		printf("%s \n%s \n %d \n%d \n %d",newStruct->nombre,newStruct->clase,newStruct->ataque, newStruct-> vida, newStruct-> defensa);
+		printf("\n\n%s \n%s \n %d \n%d \n %d\n",newStruct->nombre,newStruct->clase,newStruct->ataque, newStruct-> vida, newStruct-> defensa);
         //                  Se añade el Struct creado a la lista existente.
        //  agregarcartas(lista, newStruct); // función para agregar elementos a la lista
+       if(newStruct->vida < vidmin){
+       	vidmin= newStruct->vida;
+	   }
+	   if(newStruct->vida > vidmax){
+       	vidmax= newStruct->vida;
+	   }
+	   if(newStruct->ataque < atamin){
+       	atamin= newStruct->ataque;
+	   }
+	   if(newStruct->ataque > atamax){
+       	atamax= newStruct->ataque;
+	   }
+	   if(newStruct->defensa< defmin){
+	   	defmin= newStruct->defensa;
+	   }
+	   if(newStruct->defensa> defmax){
+	   	defmax= newStruct->defensa;
+	   }
+       
     }
     fclose(fichero);
 
@@ -111,25 +134,26 @@ void analisis( CARTA **MAZO){
 	
 	
 }
-void agregarcartas( CARTA **MAZO/*esta parte es para cuando deba crear la carta CARTA *NUEVACARTA*/) {
+void agregarcartas( CARTA **MAZO, CARTA *NUEVACARTA) {
     if (*MAZO == NULL) {
-       // *MAZO = NUEVACARTA;
+        *MAZO = NUEVACARTA;
     } else {
         CARTA *current = *MAZO;
         while (current->siguiente != NULL) {
             current = current->siguiente;
         }
-       // current->siguiente = NUEVACARTA;
+        current->siguiente = NUEVACARTA;
     }
 
 }
-CARTA *nuevacarta(char *nombre, char *clase, int ataque, int vida, int defensa){
+CARTA *crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
 	//la funcion crear debe validar en base a los datos cargados en el analisis
 	//en esta parte se relaciona con lo comentado en analisis, ya que a la hora de crear la carta
 	//el usuario debe de respetar los limites max y min  x ej  si la vida tiene 90 y el limite es 70 la vida baja a 70
 	CARTA *NUEVACARTA = (CARTA *)malloc(sizeof(CARTA));
     strcpy(NUEVACARTA->nombre, nombre);
     strcpy(NUEVACARTA->clase, clase);
+  //  NUEVACARTA->clase = clase;
     NUEVACARTA->ataque = ataque;
     NUEVACARTA->vida = vida;
     NUEVACARTA->defensa = defensa;
@@ -146,11 +170,18 @@ void atacar(){
 
 int main(){
 	int menu;
+	char *nombreNC;
+	char * claseNC;
+	int ataqueNC;
+	int vidaNC;
+	int defensaNC;
+	int wh1= 0;
+	int vidmin=0,vidmax=0,atamin=0,atamax=0,defmin=0,defmax=0; //todo estos valores se tomaran del archivo
 	
     //orden de las cartas                   Name,Type,vida,Ataque,DeFensa
     CARTA *MAZO= NULL; //mazo es el head
     CARTA *NUEVACARTA;
-	analisis(&MAZO);
+	analisis(&MAZO,vidmin,vidmax,atamin,atamax,defmin,defmax);
 	
 	
 	
@@ -187,31 +218,68 @@ int main(){
 	printf("......opcion 5:    SALIR DEL JUEGO  .....\n");
 	printf("_________________________________________\n");
 	sleep(1);
-	printf("Que opcion desea elegir:");
-	scanf("%d",&menu);
-	switch(menu){
-		case 1:
-		
-		break;
-		
-		case 2:
-			
-		break;
-			
-		case 3:
-			
-		break;
-		
-		case 4:
-			
-		break;
-		
-		
-		
-		case 5:
-			
-		default: break;
-	}
+
+	while(wh1==0){
+		printf("Que opcion desea elegir:");
+		scanf("%d",&menu);
 	
+		switch(menu){
+			case 1:                                          //aca se crearan y agregaran nuevas cartas
+			
+				printf("\n INGRESE SOLO LO SOLICITADO\n el orden de ingresos son \nNOMBRE\n CLASE\nATAQUE\nVIDA\nDEFENSA\n ");
+				printf("ingrese el nombre(SOLO LETRAS NO NUMEROS) :");
+				scanf("%s",nombreNC);
+				printf("%s",nombreNC);
+
+				printf("\n ahora ingrese la clase de la carta SOLO LETRAS NO NUMEROS\n");
+				scanf("%s",claseNC);	
+				printf("\n %s",claseNC);
+
+				printf("\n ingrese ahora el ataque NO LETRAS SOLO NUMEROS\n EL ATAQUE MAXIMO ES DE %d  ",atamax);
+				scanf("%d",&ataqueNC);
+				printf("\n %d",ataqueNC);
+				if(ataqueNC < atamin || ataqueNC>atamax){
+					ataqueNC = atamin;                   //redactar en readme: si ingresas un valor fuera de rango se pone de forma automatica el valor menor del archivo de texto
+				}
+				printf("\n ingrese ahora  la vida NO LETRAS SOLO NUMEROS\n LA VIDA MAXIMA ES DE %d  ",vidmax);
+				scanf("%d",&vidaNC);
+				printf("\n %d",vidaNC);
+				if(vidaNC < vidmin || vidaNC> vidmax){
+					vidaNC = vidmin;
+				}
+				printf("\n ingrese ahora la defensa NO LETRAS SOLO NUMEROS\n LA DEFENSA MAXIMA ES DE %d  ",defmax);
+				scanf("%d",&defensaNC);
+				printf("\n %d",defensaNC);
+				if(defensaNC < defmin || defensaNC>defmax){
+					defensaNC = defmin;
+				}
+				
+				NUEVACARTA = crearcarta( nombreNC, claseNC, ataqueNC, vidaNC, defensaNC);
+				agregarcartas(&MAZO, NUEVACARTA);
+				printf("%s,%s,%d,%d,%d",nombreNC, claseNC, ataqueNC, vidaNC, defensaNC);
+					
+				
+			
+			break;
+			
+			case 2:
+				
+			break;
+				
+			case 3:
+				
+			break;
+			
+			case 4:
+				reglas();
+			break;
+			
+			
+			
+			case 5:
+				wh1= 1;
+			default: wh1= 1;  break;
+		}
+	}
 	return 0;
 }
