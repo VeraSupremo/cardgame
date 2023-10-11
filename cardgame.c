@@ -18,12 +18,13 @@ typedef struct jugador{
 typedef struct cartas{
 	char nombre[200];
 	char clase[200];
-//	int clase;
+	int idnt;
 	int ataque;
 	int vida;
 	int defensa;
 	struct cartas*siguiente;
 }CARTA;
+
 typedef struct historial{
 	//el historial debe ser una cola ya que se muestran por orden
 }HISTORIAL;
@@ -52,10 +53,10 @@ void juego(){
 }
 // aca personajes es la lista de cartas
 //lee el archivo de texto y añade carta a la lista
-void analisis( CARTA **MAZO, int vidmin,int vidmax,int atamin,int atamax,int defmin,int defmax){
+void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int *defmin,int *defmax, int cont){
 //	struct cartas personajes [75];
 	char limite[MaximoLinea];
-	int contador;
+	//int contador;
 	FILE*fichero;
 	fichero= fopen("cardgametest.txt","r");
 	//verificador si el archivo presenta eerror o no 
@@ -80,33 +81,37 @@ void analisis( CARTA **MAZO, int vidmin,int vidmax,int atamin,int atamax,int def
         newStruct->ataque = atoi(strtok(NULL, ","));      //atoi es  para valores enteros
         newStruct->vida = atoi(strtok(NULL, ","));
         newStruct->defensa = atoi(strtok(NULL, ","));
-
+		cont ++;
+		newStruct->idnt = cont;
         newStruct->siguiente = NULL;
-
-		printf("\n\n%s \n%s \n %d \n%d \n %d\n",newStruct->nombre,newStruct->clase,newStruct->ataque, newStruct-> vida, newStruct-> defensa);
+		
         //                  Se añade el Struct creado a la lista existente.
        //  agregarcartas(lista, newStruct); // función para agregar elementos a la lista
-       if(newStruct->vida < vidmin){
-       	vidmin= newStruct->vida;
+       if(newStruct->vida < *vidmin){
+       	*vidmin= newStruct->vida;
 	   }
-	   if(newStruct->vida > vidmax){
-       	vidmax= newStruct->vida;
+	   if(newStruct->vida > *vidmax){
+       	*vidmax= newStruct->vida;
 	   }
-	   if(newStruct->ataque < atamin){
-       	atamin= newStruct->ataque;
+	   if(newStruct->ataque < *atamin){
+       	*atamin= newStruct->ataque;
 	   }
-	   if(newStruct->ataque > atamax){
-       	atamax= newStruct->ataque;
+	   if(newStruct->ataque > *atamax){
+       	*atamax= newStruct->ataque;
 	   }
-	   if(newStruct->defensa< defmin){
-	   	defmin= newStruct->defensa;
+	   if(newStruct->defensa< *defmin){
+	   	*defmin= newStruct->defensa;
 	   }
-	   if(newStruct->defensa> defmax){
-	   	defmax= newStruct->defensa;
+	   if(newStruct->defensa> *defmax){
+	   	*defmax= newStruct->defensa;
 	   }
        
+  		printf("\n\n%s \n%s \n %d \n%d \n %d\n %d\n",newStruct->nombre,newStruct->clase,newStruct->ataque, newStruct-> vida, newStruct-> defensa,newStruct->idnt);
+
     }
+    
     fclose(fichero);
+    printf("\n\nmaximo ataque: %d  maximo vida: %d  maxima defensa: %d\n\n",*atamax, *vidmax,*defmax);
 
 	
 /*	while(!feof(fichero)){
@@ -151,37 +156,101 @@ CARTA *crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
 	//en esta parte se relaciona con lo comentado en analisis, ya que a la hora de crear la carta
 	//el usuario debe de respetar los limites max y min  x ej  si la vida tiene 90 y el limite es 70 la vida baja a 70
 	CARTA *NUEVACARTA = (CARTA *)malloc(sizeof(CARTA));
-    strcpy(NUEVACARTA->nombre, nombre);
-    strcpy(NUEVACARTA->clase, clase);
-  //  NUEVACARTA->clase = clase;
-    NUEVACARTA->ataque = ataque;
-    NUEVACARTA->vida = vida;
-    NUEVACARTA->defensa = defensa;
-    NUEVACARTA->siguiente = NULL;
+	if(NUEVACARTA != NULL){
+	   	strcpy(NUEVACARTA->nombre, nombre);
+	  	strcpy(NUEVACARTA->clase, clase);
+	  	NUEVACARTA->ataque = ataque;
+		NUEVACARTA->vida = vida;
+	    NUEVACARTA->defensa = defensa;
+	    NUEVACARTA->siguiente = NULL;
+	}
+
+    
     return NUEVACARTA;
 	
 }
-void revolver(){
-	
+void revolver(CARTA** MAZO, CARTA** MAZOREVUELTO) {
+    // Contar cuÃ¡ntas estructuras hay en la lista enlazada.
+    int numEstructuras = 0;
+    CARTA* current = *MAZO;
+    while (current != NULL) {
+        numEstructuras++;
+        current = current->siguiente;
+    }
+
+    // Crear un arreglo temporal para almacenar las estructuras.
+    CARTA* losEstruct[numEstructuras]; // CARTA* losEstruct = NULL;
+
+    //                                    Llenar el arreglo con las estructuras de la lista enlazada.
+    current = *MAZO;
+    //                                        Recorrido visto en clases para lista simple
+    for (int i = 0; i < numEstructuras; i++) {
+        losEstruct[i] = current;
+        current = current->siguiente;
+    }
+
+    // Revolver el arreglo 
+    srand(time(NULL));
+    for (int i = numEstructuras - 1; i > 0; i--) {
+        int j = rand() % (i + 1); // Generar un numerito aleatorio.
+        if (i != j) {
+            // cambiar las estructuras en las posiciones i y j.
+            CARTA* temp = losEstruct[i];
+            losEstruct[i] = losEstruct[j];
+            losEstruct[j] = temp;
+        }
+        CARTA *cartaActual = *MAZO;
+	    if (cartaActual->idnt == j){
+		 //AÃ±adir al mazo revuelto
+			 if (*MAZO == NULL) {
+	     	   *MAZO = *MAZOREVUELTO;
+	    	} else {
+	       		CARTA *current = *MAZO;
+	        	while (current->siguiente != NULL) {
+	            	current = current->siguiente;
+	        	}
+	        	current->siguiente = *MAZOREVUELTO;
+		    }
+	    }
+	    else {
+	        if(cartaActual->idnt != NULL){
+	              cartaActual = cartaActual->siguiente;
+	          }
+	    }
+   }
+
+    //
+
+    /* 
+    *MAZO = losEstruct[0];
+    current = *MAZO;
+    for (int i = 1; i < numEstructuras; i++) {
+        current->siguiente = losEstruct[i];
+        current = current->siguiente;
+    }
+    current->siguiente = NULL;*/
 }
+ 
 void atacar(){
 	
 }
 
 int main(){
 	int menu;
-	char *nombreNC;
-	char * claseNC;
+	char nombreNC[100];
+	char claseNC[100];
 	int ataqueNC;
 	int vidaNC;
 	int defensaNC;
 	int wh1= 0;
+	int cont= 0;
 	int vidmin=0,vidmax=0,atamin=0,atamax=0,defmin=0,defmax=0; //todo estos valores se tomaran del archivo
 	
     //orden de las cartas                   Name,Type,vida,Ataque,DeFensa
     CARTA *MAZO= NULL; //mazo es el head
+    CARTA *MAZOREV = NULL;
     CARTA *NUEVACARTA;
-	analisis(&MAZO,vidmin,vidmax,atamin,atamax,defmin,defmax);
+	analisis(&MAZO,&vidmin,&vidmax,&atamin,&atamax,&defmin,&defmax,cont);
 	
 	
 	
@@ -228,35 +297,33 @@ int main(){
 			
 				printf("\n INGRESE SOLO LO SOLICITADO\n el orden de ingresos son \nNOMBRE\n CLASE\nATAQUE\nVIDA\nDEFENSA\n ");
 				printf("ingrese el nombre(SOLO LETRAS NO NUMEROS) :");
-				scanf("%s",nombreNC);
-				printf("%s",nombreNC);
+				scanf("%s",&nombreNC);
 
 				printf("\n ahora ingrese la clase de la carta SOLO LETRAS NO NUMEROS\n");
-				scanf("%s",claseNC);	
-				printf("\n %s",claseNC);
+				scanf("%s",&claseNC);
+				
+		        printf("\n\n ataque maximo: %d  vida maxima: %d   defensa maxima: %d\n\n",atamax, vidmax,defmax);
+
 
 				printf("\n ingrese ahora el ataque NO LETRAS SOLO NUMEROS\n EL ATAQUE MAXIMO ES DE %d  ",atamax);
 				scanf("%d",&ataqueNC);
-				printf("\n %d",ataqueNC);
 				if(ataqueNC < atamin || ataqueNC>atamax){
-					ataqueNC = atamin;                   //redactar en readme: si ingresas un valor fuera de rango se pone de forma automatica el valor menor del archivo de texto
+					ataqueNC = atamin+atamax/2;                   //redactar en readme: si ingresas un valor fuera de rango se pone de forma automatica el valor menor del archivo de texto
 				}
 				printf("\n ingrese ahora  la vida NO LETRAS SOLO NUMEROS\n LA VIDA MAXIMA ES DE %d  ",vidmax);
 				scanf("%d",&vidaNC);
-				printf("\n %d",vidaNC);
 				if(vidaNC < vidmin || vidaNC> vidmax){
-					vidaNC = vidmin;
+					vidaNC = vidmin+vidmax/2;
 				}
 				printf("\n ingrese ahora la defensa NO LETRAS SOLO NUMEROS\n LA DEFENSA MAXIMA ES DE %d  ",defmax);
 				scanf("%d",&defensaNC);
-				printf("\n %d",defensaNC);
 				if(defensaNC < defmin || defensaNC>defmax){
-					defensaNC = defmin;
+					defensaNC = defmin+defmax/2;
 				}
 				
 				NUEVACARTA = crearcarta( nombreNC, claseNC, ataqueNC, vidaNC, defensaNC);
 				agregarcartas(&MAZO, NUEVACARTA);
-				printf("%s,%s,%d,%d,%d",nombreNC, claseNC, ataqueNC, vidaNC, defensaNC);
+				printf("tu carta es:\n   %s \n   %s\n   %d\n   %d\n   %d\n",nombreNC, claseNC, ataqueNC, vidaNC, defensaNC);
 					
 				
 			
