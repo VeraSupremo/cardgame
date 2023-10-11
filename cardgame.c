@@ -169,7 +169,7 @@ CARTA *crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
     return NUEVACARTA;
 	
 }
-void revolver(CARTA** MAZO, CARTA** MAZOREVUELTO) {
+void revolver(CARTA** MAZO, CARTA** MAZOREV) {
     // Contar cuÃ¡ntas estructuras hay en la lista enlazada.
     int numEstructuras = 0;
     CARTA* current = *MAZO;
@@ -203,13 +203,13 @@ void revolver(CARTA** MAZO, CARTA** MAZOREVUELTO) {
 	    if (cartaActual->idnt == j){
 		 //AÃ±adir al mazo revuelto
 			 if (*MAZO == NULL) {
-	     	   *MAZO = *MAZOREVUELTO;
+	     	   *MAZO = *MAZOREV;
 	    	} else {
 	       		CARTA *current = *MAZO;
 	        	while (current->siguiente != NULL) {
 	            	current = current->siguiente;
 	        	}
-	        	current->siguiente = *MAZOREVUELTO;
+	        	current->siguiente = *MAZOREV;
 		    }
 	    }
 	    else {
@@ -217,18 +217,54 @@ void revolver(CARTA** MAZO, CARTA** MAZOREVUELTO) {
 	              cartaActual = cartaActual->siguiente;
 	          }
 	    }
+	   
    }
 
-    //
+}
+void revolver2(CARTA** MAZO) {
+    // Contar cuántas estructuras hay en la lista enlazada.
+    int numEstructuras = 0;
+    CARTA* current = *MAZO;
+    while (current != NULL) {
+        numEstructuras++;
+        current = current->siguiente;
+    }
 
-    /* 
+   
+    CARTA* losEstruct[numEstructuras];
+
+    // Llena un arreglo con las estructuras
+    current = *MAZO;
+    for (int i = 0; i < numEstructuras; i++) {
+        losEstruct[i] = current;
+        current = current->siguiente;
+    }
+
+    // Revolver el arreglo 
+    srand(time(NULL));
+    for (int i = numEstructuras - 1; i > 0; i--) {
+        int j = rand() % (i + 1); // Generar un número aleatorio.
+        if (i != j) {
+            // Cambiar las estructuras en las posiciones i y j.
+            CARTA* temp = losEstruct[i];
+            losEstruct[i] = losEstruct[j];
+            losEstruct[j] = temp;
+        }
+    }
+     for (int i = 0; i < numEstructuras; i++) {
+        printf("ID de la carta revuelta: %d\n", losEstruct[i]->idnt);
+    }
+
+
+    // Reconstruir la lista enlazada a partir del arreglo revuelto.
     *MAZO = losEstruct[0];
     current = *MAZO;
     for (int i = 1; i < numEstructuras; i++) {
         current->siguiente = losEstruct[i];
         current = current->siguiente;
+        
     }
-    current->siguiente = NULL;*/
+    current->siguiente = NULL;
 }
  
 void atacar(){
@@ -295,7 +331,7 @@ int main(){
 		switch(menu){
 			case 1:                                          //aca se crearan y agregaran nuevas cartas
 			
-				printf("\n INGRESE SOLO LO SOLICITADO\n el orden de ingresos son \nNOMBRE\n CLASE\nATAQUE\nVIDA\nDEFENSA\n ");
+				printf("\n INGRESE SOLO LO SOLICITADO\n el orden de ingresos son \n    NOMBRE\n    CLASE\n    ATAQUE\n    VIDA\n    DEFENSA\n ");
 				printf("ingrese el nombre(SOLO LETRAS NO NUMEROS) :");
 				scanf("%s",&nombreNC);
 
@@ -330,7 +366,10 @@ int main(){
 			break;
 			
 			case 2:
+			//aca se debe de colocar la funcion de revolver
+			revolver(&MAZO,&MAZOREV);
 				
+		//	revolver2(&MAZO);	
 			break;
 				
 			case 3:
