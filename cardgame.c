@@ -15,14 +15,14 @@ typedef struct jugador{
 	
 	
 }JUGADOR;
-typedef struct cartas{
+typedef struct CARTA{
 	char nombre[200];
 	char clase[200];
 	int idnt;
 	int ataque;
 	int vida;
 	int defensa;
-	struct cartas*siguiente;
+	struct CARTA*siguiente;
 }CARTA;
 
 typedef struct historial{
@@ -33,13 +33,13 @@ typedef struct historial{
 void reglas(){
 	printf("________________________________________________________________________________________\n");
 	printf("Cada jugador recibe un lote de 15 cartas, entregadas luego de revolver, de las cuales\n");
-	sleep(1);
+	Sleep(1000);
     printf(" debe seleccionar tres cartas para comenzar el juego las cuales quedan en su mano.\n");
-    sleep(1);
+    Sleep(1000);
     printf("Las 12 cartas restantes corresponden a un monto, que debe devolver y dejarlo al costado.\n");
-    sleep(1);
+    Sleep(1000);
     printf("Cada jugador parte con 5 puntos de vida. Los puntos de vida solo se restan cuando\n");
-    sleep(1);
+    Sleep(1000);
 	printf("uno de los guardianes (las cartas) es derrotado.\n");
     printf("En cada turno los jugadores sacan una carta y ademas pueden:\n");
     printf("Seleccionar una carta y dejarla en el campo de batalla.\n");
@@ -47,14 +47,24 @@ void reglas(){
 	printf("________________________________________________________________________________________\n");
 }
 
-void juego(){
-	int turno;
-	
+
+
+void agregarcartas( CARTA **MAZO, CARTA *NUEVACARTA) {
+    if (*MAZO == NULL) {
+        *MAZO = NUEVACARTA;
+    } else {
+        CARTA *current = *MAZO;
+        while (current->siguiente != NULL) {
+            current = current->siguiente;
+        }
+        current->siguiente = NUEVACARTA;
+    }
+
 }
+
 // aca personajes es la lista de cartas
 //lee el archivo de texto y añade carta a la lista
 void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int *defmin,int *defmax, int cont){
-//	struct cartas personajes [75];
 	char limite[MaximoLinea];
 	//int contador;
 	FILE*fichero;
@@ -69,14 +79,11 @@ void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int
 	while(fgets(limite, MaximoLinea, fichero)){
 //                                                        malloc reserva el espacio en la memoria
         CARTA *newStruct= (CARTA *)malloc(sizeof(CARTA));
-
-        char *nombre = strtok(limite, ",");
-        strcpy(newStruct->nombre, nombre);                //para copiar texto
+		
+        strcpy(newStruct->nombre, strtok(limite, ","));                //para copiar texto
         
         
-        //newStruct->clase = atoi(strtok(NULL, ","));
-		char *clase = strtok(NULL, ",");
-        strcpy(newStruct->clase, clase);
+        strcpy(newStruct->clase, strtok(NULL, ","));
       
         newStruct->ataque = atoi(strtok(NULL, ","));      //atoi es  para valores enteros
         newStruct->vida = atoi(strtok(NULL, ","));
@@ -87,23 +94,24 @@ void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int
 		
         //                  Se añade el Struct creado a la lista existente.
        //  agregarcartas(lista, newStruct); // función para agregar elementos a la lista
-       if(newStruct->vida < *vidmin){
-       	*vidmin= newStruct->vida;
+       agregarcartas(MAZO, newStruct);
+	   if(newStruct->vida < *vidmin){
+       		*vidmin= newStruct->vida;
 	   }
 	   if(newStruct->vida > *vidmax){
-       	*vidmax= newStruct->vida;
+       		*vidmax= newStruct->vida;
 	   }
 	   if(newStruct->ataque < *atamin){
-       	*atamin= newStruct->ataque;
+   	    	*atamin= newStruct->ataque;
 	   }
 	   if(newStruct->ataque > *atamax){
-       	*atamax= newStruct->ataque;
+   	    	*atamax= newStruct->ataque;
 	   }
 	   if(newStruct->defensa< *defmin){
-	   	*defmin= newStruct->defensa;
+		   	*defmin= newStruct->defensa;
 	   }
 	   if(newStruct->defensa> *defmax){
-	   	*defmax= newStruct->defensa;
+		   	*defmax= newStruct->defensa;
 	   }
        
   		printf("\n\n%s \n%s \n %d \n%d \n %d\n %d\n",newStruct->nombre,newStruct->clase,newStruct->ataque, newStruct-> vida, newStruct-> defensa,newStruct->idnt);
@@ -113,45 +121,14 @@ void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int
     fclose(fichero);
     printf("\n\nmaximo ataque: %d  maximo vida: %d  maxima defensa: %d\n\n",*atamax, *vidmax,*defmax);
 
-	
-/*	while(!feof(fichero)){
-		fgets(temp,500,fichero);
-		contador++;
-		//par que vuelva al inicio la posicion y seguir trwabajando usammos rewind
-	}
-	rewind(fichero);
-	for(int i= 0; !feof(fichero); i++){
-		fscanf(fichero %s,%s,%d,%d,%d, personajes->nombre,personajes->clase,personajes->ataque, personajes-> vida, personajes-> defensa):	
-		
-	}
-	
-	
-	while(feof(fichero)==0){
-	
-		fscanf(fichero ,%s,%s,%d,%d,%d, personajes->nombre,personajes->clase,personajes->ataque, personajes-> vida, personajes-> defensa):	
-		
-	}
-*/
-	
 
 	//debe haber un valor maximo para cada variable de vida, ataque y defensa 
 	// de esta forma cuando se esten cargando se pueden ir guardando en una variable
 	
 	
 }
-void agregarcartas( CARTA **MAZO, CARTA *NUEVACARTA) {
-    if (*MAZO == NULL) {
-        *MAZO = NUEVACARTA;
-    } else {
-        CARTA *current = *MAZO;
-        while (current->siguiente != NULL) {
-            current = current->siguiente;
-        }
-        current->siguiente = NUEVACARTA;
-    }
 
-}
-CARTA *crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
+CARTA* crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
 	//la funcion crear debe validar en base a los datos cargados en el analisis
 	//en esta parte se relaciona con lo comentado en analisis, ya que a la hora de crear la carta
 	//el usuario debe de respetar los limites max y min  x ej  si la vida tiene 90 y el limite es 70 la vida baja a 70
@@ -162,6 +139,7 @@ CARTA *crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
 	  	NUEVACARTA->ataque = ataque;
 		NUEVACARTA->vida = vida;
 	    NUEVACARTA->defensa = defensa;
+	    NUEVACARTA->idnt ++;
 	    NUEVACARTA->siguiente = NULL;
 	}
 
@@ -169,106 +147,73 @@ CARTA *crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
     return NUEVACARTA;
 	
 }
-void revolver(CARTA** MAZO, CARTA** MAZOREV) {
-    // Contar cuÃ¡ntas estructuras hay en la lista enlazada.
-    int numEstructuras = 0;
+
+ 
+ void revolver(CARTA**MAZO, CARTA **MAZOREV) {
     CARTA* current = *MAZO;
+    int cont = 0;
+    
+    // Contar el número de elementos en la lista
     while (current != NULL) {
-        numEstructuras++;
+        cont++;
         current = current->siguiente;
     }
-
-    // Crear un arreglo temporal para almacenar las estructuras.
-    CARTA* losEstruct[numEstructuras]; // CARTA* losEstruct = NULL;
-
-    //                                    Llenar el arreglo con las estructuras de la lista enlazada.
+    
+    // Crear un arreglo temporal para almacenar los nodos
+    CARTA* arr[cont];
     current = *MAZO;
-    //                                        Recorrido visto en clases para lista simple
-    for (int i = 0; i < numEstructuras; i++) {
-        losEstruct[i] = current;
-        current = current->siguiente;
-    }
+    int i = 0;
 
-    // Revolver el arreglo 
-    srand(time(NULL));
-    for (int i = numEstructuras - 1; i > 0; i--) {
-        int j = rand() % (i + 1); // Generar un numerito aleatorio.
-        if (i != j) {
-            // cambiar las estructuras en las posiciones i y j.
-            CARTA* temp = losEstruct[i];
-            losEstruct[i] = losEstruct[j];
-            losEstruct[j] = temp;
-        }
-        CARTA *cartaActual = *MAZO;
-	    if (cartaActual->idnt == j){
-		 //AÃ±adir al mazo revuelto
-			 if (*MAZO == NULL) {
-	     	   *MAZO = *MAZOREV;
-	    	} else {
-	       		CARTA *current = *MAZO;
-	        	while (current->siguiente != NULL) {
-	            	current = current->siguiente;
-	        	}
-	        	current->siguiente = *MAZOREV;
-		    }
-	    }
-	    else {
-	        if(cartaActual->idnt != NULL){
-	              cartaActual = cartaActual->siguiente;
-	          }
-	    }
-	   
-   }
-
-}
-void revolver2(CARTA** MAZO) {
-    // Contar cuántas estructuras hay en la lista enlazada.
-    int numEstructuras = 0;
-    CARTA* current = *MAZO;
+    // Copiar los nodos en el arreglo
     while (current != NULL) {
-        numEstructuras++;
+        arr[i] = current;
         current = current->siguiente;
+        i++;
     }
 
-   
-    CARTA* losEstruct[numEstructuras];
-
-    // Llena un arreglo con las estructuras
-    current = *MAZO;
-    for (int i = 0; i < numEstructuras; i++) {
-        losEstruct[i] = current;
-        current = current->siguiente;
-    }
-
-    // Revolver el arreglo 
+    // Inicializar el generador de números aleatorios
     srand(time(NULL));
-    for (int i = numEstructuras - 1; i > 0; i--) {
-        int j = rand() % (i + 1); // Generar un número aleatorio.
-        if (i != j) {
-            // Cambiar las estructuras en las posiciones i y j.
-            CARTA* temp = losEstruct[i];
-            losEstruct[i] = losEstruct[j];
-            losEstruct[j] = temp;
-        }
-    }
-     for (int i = 0; i < numEstructuras; i++) {
-        printf("ID de la carta revuelta: %d\n", losEstruct[i]->idnt);
+
+    // Revolver el arreglo de nodos
+    for (i = cont - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        CARTA* temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
     }
 
-
-    // Reconstruir la lista enlazada a partir del arreglo revuelto.
-    *MAZO = losEstruct[0];
-    current = *MAZO;
-    for (int i = 1; i < numEstructuras; i++) {
-        current->siguiente = losEstruct[i];
+    // Reconstruir la lista enlazada con el arreglo revuelto
+    *MAZOREV = arr[0];
+    current = *MAZOREV;
+    for (i = 1; i < cont; i++) {
+        current->siguiente = arr[i];
         current = current->siguiente;
-        
     }
     current->siguiente = NULL;
 }
  
+ void mostrarcartas(){
+ 	
+ }
+ void juego(CARTA **MAZO){
+	int player1[15];
+	int player2[15];
+	
+	
+}
 void atacar(){
 	
+}
+
+void imprimirLista(CARTA **MAZO){
+	CARTA *current = *MAZO;
+	int contador = 0;
+	
+	while(current != NULL){
+		contador++;
+		printf("%d) Nombre: %s    Clase: %s   ataque: %d   vida: %d   defensa: %d\n\n", contador, current->nombre,current->clase,current->ataque,current->vida,current->defensa);
+		current = current->siguiente;
+	}
 }
 
 int main(){
@@ -301,20 +246,19 @@ int main(){
 	
 	
 	
-	
 	//menu de inicio para empezar
-	sleep(1);
+	Sleep(1000);
 	printf("\nCARGANDO JUEGO");
-	sleep(1);
+	Sleep(1000);
 	printf("..");
-	sleep(1);
+	Sleep(1000);
 	printf("..");
-	sleep(1);
+	Sleep(1000);
 	printf("..");
-	sleep(2);
+	Sleep(2000);
 	printf("............\nJUEGO CARGADO EXITOSAMENTE\n\n\n");
 	printf("BIENVENIDO A THE CLASH OF THE GUARDIANS\n");
-	sleep(2);
+	Sleep(2000);
 	printf("__________________________________________\n");
 	printf("......opcion 1:   CREAR CARTA PROPIA.....\n");
 	printf("......opcion 2:     NUEVA PARTIDA   .....\n");
@@ -322,7 +266,7 @@ int main(){
 	printf("......opcion 4:         REGLAS      .....\n");
 	printf("......opcion 5:    SALIR DEL JUEGO  .....\n");
 	printf("_________________________________________\n");
-	sleep(1);
+	Sleep(1000);
 
 	while(wh1==0){
 		printf("Que opcion desea elegir:");
@@ -359,18 +303,25 @@ int main(){
 				
 				NUEVACARTA = crearcarta( nombreNC, claseNC, ataqueNC, vidaNC, defensaNC);
 				agregarcartas(&MAZO, NUEVACARTA);
-				printf("tu carta es:\n   %s \n   %s\n   %d\n   %d\n   %d\n",nombreNC, claseNC, ataqueNC, vidaNC, defensaNC);
+				
+				printf("tu carta es:\n   %s \n   %s\n   %d\n   %d\n   %d\n  ",nombreNC, claseNC, ataqueNC, vidaNC, defensaNC);
 					
 				
 			
 			break;
 			
 			case 2:
-			//aca se debe de colocar la funcion de revolver
-			revolver(&MAZO,&MAZOREV);
+				imprimirLista(&MAZO);
+				Sleep(3000);
+				printf("\n\n\n\n\n\n\n\n");
+				system("cls");
+				revolver(&MAZO, &MAZOREV);
+				imprimirLista(&MAZOREV);
 				
-		//	revolver2(&MAZO);	
-			break;
+				//asignar 15 cartas al jugador B)
+				
+					
+				break;
 				
 			case 3:
 				
@@ -383,6 +334,7 @@ int main(){
 			
 			
 			case 5:
+			//memory);
 				wh1= 1;
 			default: wh1= 1;  break;
 		}
