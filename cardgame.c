@@ -10,9 +10,9 @@
 #define UenJuego  5
 #define MaximoLinea  459
 typedef struct jugador{
-	char nombre[200];
-	int vida[4]; //un array para la vida? vida[0] = 1, vida[1] = 1 y asi? -n
-	
+	char nombre[100];
+	int vida ; //un array para la vida? vida[0] = 1, vida[1] = 1 y asi? -n
+	struct CARTA* mano[15];
 	
 }JUGADOR;
 typedef struct CARTA{
@@ -64,9 +64,9 @@ void agregarcartas( CARTA **MAZO, CARTA *NUEVACARTA) {
 
 // aca personajes es la lista de cartas
 //lee el archivo de texto y añade carta a la lista
-void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int *defmin,int *defmax, int cont){
+void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int *defmin,int *defmax, int cont,int wh1){
 	char limite[MaximoLinea];
-	//int contador;
+	int contadormin= 0;
 	FILE*fichero;
 	fichero= fopen("cardgametest.txt","r");
 	//verificador si el archivo presenta eerror o no 
@@ -115,9 +115,14 @@ void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int
 	   }
        
   		printf("\n\n%s \n%s \n %d \n%d \n %d\n %d\n",newStruct->nombre,newStruct->clase,newStruct->ataque, newStruct-> vida, newStruct-> defensa,newStruct->idnt);
-
+		contadormin++;
+		
     }
-    
+    if(contadormin<=30){
+    	perror("no tiene la cantidad necesaria");
+    	fclose(fichero);
+    	wh1 = 1;
+	}
     fclose(fichero);
     printf("\n\nmaximo ataque: %d  maximo vida: %d  maxima defensa: %d\n\n",*atamax, *vidmax,*defmax);
 
@@ -145,6 +150,9 @@ CARTA* crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
 
     
     return NUEVACARTA;
+	
+}
+void pop(){
 	
 }
 
@@ -195,20 +203,63 @@ CARTA* crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
  void mostrarcartas(){
  	
  }
- void juego(CARTA **MAZO){
-	int player1[15];
-	int player2[15];
-	
-	
+ void juego(CARTA **MAZOREV,JUGADOR* jugador1, JUGADOR* jugador2){
+	//int player1[15];
+	//int player2[15];
+	CARTA* current = *MAZOREV;
+    int contrev = 0;
+    int contmax= 30;
+    for (int i = 0; i < maxd_cartas; i++) {
+        jugador1->mano[i] = NULL;
+        jugador2->mano[i] = NULL;
+    }
+    
+      for (int i = 0; i < maxd_cartas; i++) {
+        if (*MAZOREV == NULL) {
+            printf("No hay más cartas disponibles \n");
+            break;
+        }
+
+        // Asignar carta a jugador2
+        CARTA* carta = *MAZOREV;
+        *MAZOREV = (*MAZOREV)->siguiente;
+        jugador1->mano[i] = carta;
+
+        if (*MAZOREV == NULL) {
+            printf("No hay más cartas disponibles para repartir\n");
+            break;
+        }
+
+        // Asignar carta a jugador2
+        carta = *MAZOREV;
+        *MAZOREV = (*MAZOREV)->siguiente;
+        jugador2->mano[i] = carta;
+        printf("%d  \n",carta->idnt);
+    }
+    
+    
+
 }
 void atacar(){
 	
 }
-
+void imprimirCjugador(JUGADOR* jugador){
+	for(int i = 0; i<maxd_cartas; i++){
+		if(jugador->mano[i]!= NULL){
+			 printf("CARTA [%d]:\n", i + 1);
+            printf("Nombre: %s\n", jugador->mano[i]->nombre);
+            printf("Clase: %s\n", jugador->mano[i]->clase);
+            printf("Ataque: %d\n", jugador->mano[i]->ataque);
+            printf("Vida: %d\n", jugador->mano[i]->vida);
+            printf("Defensa: %d\n", jugador->mano[i]->defensa);
+            printf("\n");
+		}
+	}
+	
+}
 void imprimirLista(CARTA **MAZO){
 	CARTA *current = *MAZO;
 	int contador = 0;
-	
 	while(current != NULL){
 		contador++;
 		printf("%d) Nombre: %s    Clase: %s   ataque: %d   vida: %d   defensa: %d\n\n", contador, current->nombre,current->clase,current->ataque,current->vida,current->defensa);
@@ -231,7 +282,9 @@ int main(){
     CARTA *MAZO= NULL; //mazo es el head
     CARTA *MAZOREV = NULL;
     CARTA *NUEVACARTA;
-	analisis(&MAZO,&vidmin,&vidmax,&atamin,&atamax,&defmin,&defmax,cont);
+    JUGADOR jugador1;
+    JUGADOR jugador2;
+	analisis(&MAZO,&vidmin,&vidmax,&atamin,&atamax,&defmin,&defmax,cont,wh1);
 	
 	
 	
@@ -269,6 +322,7 @@ int main(){
 	Sleep(1000);
 
 	while(wh1==0){
+
 		printf("Que opcion desea elegir:");
 		scanf("%d",&menu);
 	
@@ -319,8 +373,10 @@ int main(){
 				imprimirLista(&MAZOREV);
 				
 				//asignar 15 cartas al jugador B)
-				
-					
+				juego(&MAZOREV,&jugador1,&jugador2);
+				imprimirCjugador(&jugador1);
+				Sleep(1000);
+				imprimirCjugador(&jugador2);
 				break;
 				
 			case 3:
