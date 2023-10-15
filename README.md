@@ -1,6 +1,8 @@
 # cardgame
- el codigo fue realizado en el programa dev c++ en su version portable 5.11
- la compilacion no posee errores o warnings se recomienda utilizar el mismo programa y version 
+
+
+ ## **_el codigo fue realizado en el programa dev c++ en su version portable 5.11*
+ ##la compilacion no posee errores o warnings se recomienda utilizar el mismo programa y version* 
 
  el usuario al empezar el programa debe decidir en el menu si desea agregar una carta, iniciar la partida, ver las reglas o el historial y por ultimo salir
  el menu solo tomara numeros para ingresar, siempre que esten dentro del rango solicitado
