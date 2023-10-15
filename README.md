@@ -1,9 +1,14 @@
 # cardgame
-
- ## El codigo fue realizado en el programa dev c++ en su version portable 5.11
+# proyecto unidad 1 algoritmo y estructura de datos
  
- ### la compilacion no posee errores o warnings se recomienda utilizar el mismo programa y version 
+ ## introduccion:
+   el proyecto busca poder implementar de buena manera las listas, pilas y colas para reforzar esto se creo un juego de cartas en el cual podremos combatir, recorrer lista y eliminar    elementos de estas.
+   ### El codigo fue realizado en el programa dev c++ en su version portable 5.11
+   ### tambien el codigo utilizo librerias como: stdio.h, windows.h, time.h, stdlib.h y math.h.
 
+   ### Para la instalacion siga los pasos del ejecutable por favor.
+
+### breve resumen del programa;
  el usuario al empezar el programa debe decidir en el menu si desea agregar una carta, iniciar la partida, ver las reglas o el historial y por ultimo salir
  el menu solo tomara numeros para ingresar, siempre que esten dentro del rango solicitado
 
