@@ -11,9 +11,9 @@
 
  despues de crear la carta el usuario vuelve al menu para elegir la opcion de volver a crear y las demas opciones
  en la seccion de nueva partida las cartas se revuelven y se le entregan 15 a el usuario 1 y 2
- de estas 15 solo pueden elegir 3 obligtoriamente no podran exceder esa cantidad de carta
-jugaran con las 3 cartas en la meza pudiendo atacar a cualquiera de esas 3 
-
+ de estas 15 solo pueden elegir 3 en un inicio, despues deberan elegir una carta para dejar al frente de la batalla
+ y se dara la opcion de sacar una carta o atacar
+ si al atacar eliminas la vida de la carta esta se eliminara y el que pierda esta carta se le quitara una vida
 
 si se elige la opcion numero 5 que es salir 
 se libera la memoria y se cierra el juego 
