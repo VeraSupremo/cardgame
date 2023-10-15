@@ -3,7 +3,7 @@
  
  ## introduccion:
    el proyecto busca poder implementar de buena manera las listas, pilas y colas para reforzar esto se creo un juego de cartas en el cual podremos combatir, recorrer lista y eliminar    elementos de estas.
-   ### El codigo fue realizado en el programa dev c++ en su version portable 5.11
+   ### El codigo fue realizado en el programa dev c++ en su version portable 5.11 y su compilador tiene la version de TDM-GCC 4.9.2 64-bits
    ### tambien el codigo utilizo librerias como: stdio.h, windows.h, time.h, stdlib.h y math.h.
 
    ### Para la instalacion siga los pasos del ejecutable por favor.
