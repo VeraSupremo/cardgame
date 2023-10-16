@@ -1,0 +1,12 @@
+install
+
+1: verificar que su version de windows es w10 de 64bits
+2: tener dev c++ en su version portable 5.11
+3:que el compilador sea tdm-gcc 4.9.2 64-bit
+4: que esta version y la del controlador reciba la declaracion de enteros dentro de los for
+5: por favor asegurese qu eel archivo de texto este dentro del mismo que el del codigo tambien de que si planea colocar otro archivo sea uno que posea el mismo nombre que el que esta ahi
+o debera cambiar el nombre declarado en la funcion de analisis
+6:siga las instrucciones que se le dan en el programa para evitar algun problema
+
+pd cabe recalcar que la entrega de este programa fue sin errores o warnings pero identifique quizas la declaracion de enteros dentro de los for podia dar 
+algun error por lo mismo se piden las cosas del punto 2,3 y 4.

@@ -10,10 +10,10 @@
 #define UenJuego  5
 #define MaximoLinea  450
 typedef struct jugador{
-	char nombre[100];
 	int vida ; //un array para la vida? vida[0] = 1, vida[1] = 1 y asi? -n
-	struct CARTA* mano[15];
-	struct CARTA* enJuego[cartas_juego];
+	struct CARTA* monton[maxd_cartas]; //recibe las 15 caartas
+	struct CARTA* mano[maxd_cartas]; //elige las cartas para jugar
+	struct CARTA* mesa[maxd_cartas]; //cartas para atacar o colocar
 	
 }JUGADOR;
 typedef struct CARTA{
@@ -115,7 +115,7 @@ void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int
 		   	*defmax= newStruct->defensa;
 	   }
        
-  		printf("\n\n%s \n%s \n %d \n%d \n %d\n %d\n",newStruct->nombre,newStruct->clase,newStruct->ataque, newStruct-> vida, newStruct-> defensa,newStruct->idnt);
+  	//	printf("\n\n%s \n%s \n %d \n%d \n %d\n %d\n",newStruct->nombre,newStruct->clase,newStruct->ataque, newStruct-> vida, newStruct-> defensa,newStruct->idnt);
 		contadormin++;
 		
     }
@@ -125,7 +125,7 @@ void analisis( CARTA **MAZO, int *vidmin,int *vidmax,int *atamin,int *atamax,int
     	wh1 = 1;
 	}
     fclose(fichero);
-    printf("\n\nmaximo ataque: %d  maximo vida: %d  maxima defensa: %d\n\n",*atamax, *vidmax,*defmax);
+   // printf("\n\nmaximo ataque: %d  maximo vida: %d  maxima defensa: %d\n\n",*atamax, *vidmax,*defmax);
 
 
 	//debe haber un valor maximo para cada variable de vida, ataque y defensa 
@@ -178,7 +178,6 @@ CARTA* crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
         i++;
     }
 
-    srand(time(NULL));
 
     // Revolver 
     for (i = cont - 1; i > 0; i--) {
@@ -198,18 +197,14 @@ CARTA* crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
     current->siguiente = NULL;
 }
  
- void mostrarcartas(){
- 	
- }
+ 
  void juego(CARTA **MAZOREV,JUGADOR* jugador1, JUGADOR* jugador2){
-	//int player1[15];
-	//int player2[15];
 	CARTA* current = *MAZOREV;
     int contrev = 0;
     int contmax= 30;
     for (int i = 0; i < maxd_cartas; i++) {
-        jugador1->mano[i] = NULL;
-        jugador2->mano[i] = NULL;
+        jugador1->monton[i] = NULL;
+        jugador2->monton[i] = NULL;
     }
     
       for (int i = 0; i < maxd_cartas; i++) {
@@ -221,7 +216,7 @@ CARTA* crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
         // Asignar carta a jugador2
         CARTA* carta = *MAZOREV;
         *MAZOREV = (*MAZOREV)->siguiente;
-        jugador1->mano[i] = carta;
+        jugador1->monton[i] = carta;
 
         if (*MAZOREV == NULL) {
             printf("No hay más cartas disponibles para repartir\n");
@@ -231,7 +226,7 @@ CARTA* crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
         // Asignar carta a jugador2
         carta = *MAZOREV;
         *MAZOREV = (*MAZOREV)->siguiente;
-        jugador2->mano[i] = carta;
+        jugador2->monton[i] = carta;
         printf("%d  \n",carta->idnt);
         
     }
@@ -239,25 +234,28 @@ CARTA* crearcarta(char *nombre, char *clase, int ataque, int vida, int defensa){
     
 
 }
+
+
+
 void elegir(JUGADOR*jugador){
 	int elecciones[3];
 	printf("Tus cartas en mano:\n");
     for (int i = 0; i < 15; i++) {             //aca se muestra al ususario las cartas del 1 al 15 para que elija una
-        if (jugador->mano[i] != NULL) {
-            printf("%d) %s\n %s\n", i + 1, jugador->mano[i]->nombre,jugador->mano[i]->clase);
+        if (jugador->monton[i] != NULL) {
+            printf("%d) %s\n %s\n", i + 1, jugador->monton[i]->nombre,jugador->monton[i]->clase);
         }   
     }
 	for(int i= 1; i<=3;i++){
 		int eleccion= 0;
 		printf("ELIGE LA CARTA [%d]",i);
 		scanf("%d",&eleccion);
-		if(eleccion >= 1 &&eleccion <= 15 && jugador->mano[i]!= NULL){
+		if(eleccion >= 1 &&eleccion <= 15 && jugador->monton[i]!= NULL){
 			elecciones[i]=eleccion-1;
-			jugador->enJuego[i]= jugador->mano[elecciones[i]];
+			jugador->mano[i]= jugador->monton[elecciones[i]];
 			
 			//una vez asignado se elimina de la carta de de mano
-			printf("tu carta fue: %s\n",jugador->enJuego[i]->nombre);
-			jugador->mano[elecciones[i]]= NULL;
+			printf("tu carta fue: %s\n",jugador->mano[i]->nombre);
+			jugador->monton[elecciones[i]]= NULL;
 			
 		}else{
 			printf("\n INGRESE NUMERO VALIDO\n");
@@ -267,18 +265,19 @@ void elegir(JUGADOR*jugador){
 		
 	}
 		for(int j= 1; j<=3;j++){
+			system("cls");
 			printf("TUS CARTAS SON\n");
 			printf("_________________\n");
-			printf("[%s]\n",jugador->enJuego[j]->nombre);
-			printf("[%s]\n",jugador->enJuego[j]->clase);
+			printf("[%s]\n",jugador->mano[j]->nombre);
+			printf("[%s]\n",jugador->mano[j]->clase);
 			printf("|----------------|\n");
 			printf("|                |\n");
 			printf("|                |\n");
 			printf("|                |\n");
 			printf("|________________|\n");
-			printf("       [%d]\n",jugador->enJuego[j]->ataque);
-			printf("       [%d]\n",jugador->enJuego[j]->vida);
-			printf("       [%d]\n",jugador->enJuego[j]->defensa);
+			printf("       [%d]\n",jugador->mano[j]->ataque);
+			printf("       [%d]\n",jugador->mano[j]->vida);
+			printf("       [%d]\n",jugador->mano[j]->defensa);
 			printf("_________________\n");
 			Sleep(2000);
 			system("cls");
@@ -287,37 +286,43 @@ void elegir(JUGADOR*jugador){
 void imprimirCjugador2(JUGADOR* jugador){
 	printf("\n las cartas de J2 son:\n");
 	for(int i= 0; i<=3; i++){
-		printf("___________________________\n [%s]  [%d]\n__________________________\n",jugador->enJuego[i]->nombre,jugador->enJuego[i]->vida);
+		if(jugador->mano[i]!= NULL){
+			printf("___________________________\n [%s]  [%d]\n__________________________\n",jugador->mano[i]->nombre,jugador->mano[i]->vida);			
+		}else{
+			printf("CARTA VACIA\n");
+		}
 	}	
 }
 
 void imprimirCjugador(JUGADOR* jugador){
 	for(int i = 0; i<maxd_cartas; i++){
-		if(jugador->mano[i]!= NULL){
+		if(jugador->monton[i]!= NULL){
 			 printf("CARTA [%d]:\n", i + 1);
-            printf("Nombre: %s\n", jugador->mano[i]->nombre);
-            printf("Clase: %s\n", jugador->mano[i]->clase);
-            printf("Ataque: %d\n", jugador->mano[i]->ataque);
-            printf("Vida: %d\n", jugador->mano[i]->vida);
-            printf("Defensa: %d\n", jugador->mano[i]->defensa);
+            printf("Nombre: %s\n", jugador->monton[i]->nombre);
+            printf("Clase: %s\n", jugador->monton[i]->clase);
+            printf("Ataque: %d\n", jugador->monton[i]->ataque);
+            printf("Vida: %d\n", jugador->monton[i]->vida);
+            printf("Defensa: %d\n", jugador->monton[i]->defensa);
             printf("\n");
 		}
 	}
 }
 void elegirj2(JUGADOR* jugador){
 	int eleccion2;
-	srand(time(NULL));
-	int elecciones2[3];
+	//int elecciones2[3];
 	for(int i= 1; i<=3;i++){
 		int eleccion2= 0;
 		printf("JUGADOR 2 ELIGIO CARTA [%d]",i);
 		eleccion2= rand() % 15;
 		printf("%d\n\n\n",eleccion2);
-		if(eleccion2 >= 1 &&eleccion2 <= 15 && jugador->mano[i]!= NULL){
-			elecciones2[i]=eleccion2-1;
-			jugador->enJuego[i]= jugador->mano[elecciones2[i]];
+		if(eleccion2 >= 0 &&eleccion2 <= 14 && jugador->monton[eleccion2]!= NULL){
+		//	elecciones2[i]=eleccion2;
+			
+			//jugador->mano[i]= jugador->monton[elecciones2[i]];
+			jugador->mano[i]= jugador->monton[eleccion2];
+
 				//una vez asignado se elimina de la carta de de mano
-			jugador->mano[elecciones2[i]]= NULL;
+			jugador->monton[eleccion2]= NULL;
 		}else{
 			printf("\n J2 SE EQUIVOCO XD\n");
 			i--;
@@ -325,6 +330,47 @@ void elegirj2(JUGADOR* jugador){
 		
 	}
 	
+	
+}
+
+void Ecartamesa(JUGADOR* jugador,int Cpcombate){
+    printf("\n necesito que escoja una de sus 3 cartas para mandar combate\n");
+    scanf("%d",&Cpcombate);
+
+    while(1){
+        if(Cpcombate >= 0 && Cpcombate <= 14 && jugador->mano[Cpcombate] != NULL){
+            for(int i = 0; i < 15; i++){
+                if (jugador->mesa[i] == NULL){
+                    jugador->mesa[i] = jugador->mano[Cpcombate];
+                    jugador->mano[Cpcombate] = NULL;
+                    break;
+                }
+            }
+            break;
+        } else {
+            printf("\n INGRESE NUMERO VALIDO\n");
+        }
+    }
+}
+void Ecartamesaj2(JUGADOR* jugador){
+	int Cpcombate2= rand()%15;
+	 while(1){
+        if(Cpcombate2 >= 0 && Cpcombate2 <= 14 && jugador->mano[Cpcombate2] != NULL){
+            for(int i = 0; i < 15; i++){
+                if (jugador->mesa[i] == NULL){
+                    jugador->mesa[i] = jugador->mano[Cpcombate2];
+                    jugador->mano[Cpcombate2] = NULL;
+                    break;
+                }
+            }
+            break;
+        } else {
+            printf("\n INGRESE NUMERO VALIDO\n");
+        }
+    }
+	
+}
+void cartaenmesa(JUGADOR* jugador){
 	
 }
 void ataque(JUGADOR* jugador){
@@ -344,13 +390,22 @@ void imprimirLista(CARTA **MAZO){
 		current = current->siguiente;
 	}
 }
+void liberal(CARTA** MAZO,CARTA** MAZOREV){
+	CARTA* current= *MAZO;
+	while(current != NULL){
+		CARTA *siguiente= current->siguiente;
+		free(current);
+		current= siguiente;
+	}
+}
 
 
 int main(){
+	srand(time(NULL));
 	int menu;
 	char nombreNC[100];
 	char claseNC[100];
-	int ataqueNC;
+	int ataqueNC,Cpcombate;
 	int vidaNC;
 	int defensaNC;
 	int wh1= 0;
@@ -408,7 +463,7 @@ int main(){
 
 	while(wh1==0){
 
-		printf("Que opcion desea elegir:");
+		printf("Que opcion del menu desea elegir:");
 		scanf("%d",&menu);
 	
 		switch(menu){
@@ -450,12 +505,17 @@ int main(){
 			break;
 			
 			case 2:
-				imprimirLista(&MAZO);
+				printf("lellendo archivos \n");
+				
 				Sleep(3000);
-				printf("\n\n\n\n\n\n\n\n");
+				printf("\n\n\n mazo leido \n\n\n\n");
 				system("cls");
 				revolver(&MAZO, &MAZOREV);
-				imprimirLista(&MAZOREV);
+				printf("revolviendo mazo\n");
+				Sleep(1000);
+				printf("mazo revuelto\n");
+				Sleep(1000);
+				
 				while(whg==0){
 					//asignar 15 cartas al jugador B)
 					juego(&MAZOREV,&jugador1,&jugador2);
@@ -473,10 +533,15 @@ int main(){
 						elegirj2(&jugador2);
 						printf("\n tus 3 cartas estan en la mesa solo puedes ver nombre y vida de J2\n piensa sabiamente tus movimientos\n");
 						printf("\ncartas J2\n");
-						imprimirCjugador2(&jugador2);
+					//	imprimirCjugador2(&jugador2);
+						int Cpcombate= 0;
+					
+						Ecartamesa(&jugador1, Cpcombate);
+						Ecartamesaj2(&jugador2);
 						while(whattke==0){                           // este while repetira la mecanca de ataque hasta que los 2 jugadores se queden o sin 3 cartas
 							printf("\nturno jugador 1\n");
 							printf("\nDESEA ATACAR?\n 1= SI \n 0= NO\n");
+							scanf("%d",&atke);
 							if(atke==0){
 								printf("TURNO JUGADOR 2\n");   //turno player2 para atacar esto se decidira con randoms dependiendo de las cartas que tenga en mano
 								atkj2= rand ()%1;
@@ -537,6 +602,8 @@ int main(){
 			
 			case 5:
 			//liberar memoria aca
+				liberal(&MAZO,&MAZOREV);
+			
 				wh1= 1;
 				printf("MUCHAS GRACIAS POR JUGAR ME HUBIESE GUSTADO TRAER MAS COSAS...PIDO PERDON POR ESO ");
 			default: wh1= 1;  break;
