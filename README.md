@@ -24,3 +24,7 @@
 
 si se elige la opcion numero 5 que es salir 
 se libera la memoria y se cierra el juego 
+
+
+por ultimo adjunto fotografia que en mi pc esta sin errores o warnings
+![image](https://github.com/VeraSupremo/cardgame/assets/114789446/d95d9349-7a26-4eef-87bc-630210d8ac95)
